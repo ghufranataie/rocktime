@@ -1,4 +1,4 @@
-# Welcome to your Lovable project
+# Welcome to your Show-Time project
 
 ## Project info
 
