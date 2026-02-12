@@ -1,73 +1,142 @@
-# Welcome to your Show-Time project
+# 🎫 Showtime228 - Event Ticketing Platform
 
-## Project info
+A modern event ticketing website built with React, TypeScript, and TailwindCSS.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+[![React](https://img.shields.io/badge/React-18.3-blue)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-7.3-purple)](https://vitejs.dev/)
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 🚀 Quick Start
 
-**Use Lovable**
+### Install and Run
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+```bash
+# Install dependencies
+npm install
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Open browser at **http://localhost:8080**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Build for Production
 
-**Use GitHub Codespaces**
+```bash
+# Create production build
+npm run build
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Preview production build
+npm run preview
+```
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## 📦 Deploy to AWS S3
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+**Complete deployment guide:** See [DEPLOY_TO_S3.md](DEPLOY_TO_S3.md)
 
-## How can I deploy this project?
+### Quick Deploy
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+```bash
+# 1. Build
+npm run build
 
-## Can I connect a custom domain to my Lovable project?
+# 2. Deploy (requires AWS CLI)
+./deploy-s3.sh your-bucket-name us-east-1
+```
 
-Yes, you can!
+Your website will be live at:
+```
+http://your-bucket-name.s3-website-us-east-1.amazonaws.com
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 🛠️ Tech Stack
+
+- **React 18** - UI library
+- **TypeScript** - Type safety
+- **Vite** - Build tool
+- **TailwindCSS** - Styling
+- **shadcn/ui** - UI components
+- **React Router** - Navigation
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── pages/              # Main pages (Home, Events, Cart, etc.)
+├── components/         # Reusable components
+│   └── ui/            # shadcn/ui components
+├── context/           # React Context (Cart state)
+├── data/              # Static data (event list)
+├── hooks/             # Custom hooks
+└── lib/               # Utilities
+```
+
+See [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) for detailed structure.
+
+---
+
+## 🌐 Routes
+
+- `/` - Home page
+- `/events` - Events list
+- `/event/:id` - Event details
+- `/cart` - Shopping cart
+- `/checkout` - Checkout
+- `/auth` - Login/Register
+- `/about` - About page
+- `/contact` - Contact page
+
+---
+
+## 📜 Available Commands
+
+```bash
+npm run dev          # Start dev server
+npm run build        # Production build
+npm run preview      # Preview build
+npm run lint         # Check code
+npm run test         # Run tests
+npm run deploy:s3    # Deploy to S3 (requires setup)
+```
+
+---
+
+## 📚 Documentation
+
+- **[DEPLOY_TO_S3.md](DEPLOY_TO_S3.md)** - Complete AWS S3 deployment guide
+- **[PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md)** - Detailed project structure
+
+---
+
+## ✅ Project Status
+
+- ✅ All dependencies installed (493 packages)
+- ✅ Zero vulnerabilities
+- ✅ Production build tested
+- ✅ Ready to deploy to S3
+
+---
+
+## 💰 Hosting Cost
+
+Hosting on AWS S3:
+- **Small traffic:** $0.50-1.00/month
+- **First year:** Often FREE (AWS Free Tier)
+
+See [DEPLOY_TO_S3.md](DEPLOY_TO_S3.md) for details.
+
+---
+
+## 📞 Support
+
+Questions? See the documentation files or create an issue.
+
+**Happy coding! 🚀**

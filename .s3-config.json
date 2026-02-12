@@ -1,0 +1,60 @@
+{
+  "bucketName": "showtime228-app",
+  "region": "us-east-1",
+  "staticWebsiteHosting": {
+    "indexDocument": "index.html",
+    "errorDocument": "index.html"
+  },
+  "bucketPolicy": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "PublicReadGetObject",
+        "Effect": "Allow",
+        "Principal": "*",
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::showtime228-app/*"
+      }
+    ]
+  },
+  "corsConfiguration": [
+    {
+      "AllowedHeaders": ["*"],
+      "AllowedMethods": ["GET", "HEAD"],
+      "AllowedOrigins": ["*"],
+      "ExposeHeaders": ["ETag"],
+      "MaxAgeSeconds": 3000
+    }
+  ],
+  "cloudFrontConfiguration": {
+    "priceClass": "PriceClass_100",
+    "defaultCacheBehavior": {
+      "viewerProtocolPolicy": "redirect-to-https",
+      "allowedMethods": ["GET", "HEAD", "OPTIONS"],
+      "cachedMethods": ["GET", "HEAD"],
+      "compress": true,
+      "minTTL": 0,
+      "defaultTTL": 86400,
+      "maxTTL": 31536000
+    },
+    "customErrorResponses": [
+      {
+        "errorCode": 403,
+        "responseCode": 200,
+        "responsePagePath": "/index.html",
+        "errorCachingMinTTL": 300
+      },
+      {
+        "errorCode": 404,
+        "responseCode": 200,
+        "responsePagePath": "/index.html",
+        "errorCachingMinTTL": 300
+      }
+    ]
+  },
+  "notes": {
+    "errorDocument": "CRITICAL: Error document must be set to index.html for React Router to work with direct URLs like /events or /cart",
+    "cloudFront": "CloudFront is optional but recommended for HTTPS, custom domains, and global CDN distribution",
+    "deployment": "Use 'npm run deploy:s3' to build and deploy to S3. Update bucket name in package.json before deploying."
+  }
+}
