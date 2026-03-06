@@ -16,12 +16,6 @@ interface Founder {
   founderRole: string;
   avatar: string;
 }
-// const team = [
-//   { name: "Sarah Chen", role: "CEO & Co-Founder", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face" },
-//   { name: "Marcus Johnson", role: "CTO", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face" },
-//   { name: "Emily Rodriguez", role: "Head of Design", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face" },
-//   { name: "David Kim", role: "Head of Partnerships", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face" },
-// ];
 
 export default function AboutPage() {
   const [team, setTeam] = useState<Founder[]>([]);
@@ -32,7 +26,7 @@ export default function AboutPage() {
       .then((data) => setTeam(data))
       .catch((err) => console.error(err));
   }, []);
-  
+
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="container mx-auto px-4">
@@ -70,7 +64,7 @@ export default function AboutPage() {
                 alt={member.firstName}
                 className="w-24 h-24 rounded-full mx-auto mb-3 object-cover border-2 border-border group-hover:border-primary transition-colors"
               />
-              <p className="font-semibold text-sm">{member.lastName}</p>
+              <p className="font-semibold text-sm">{member.firstName} {member.lastName}</p>
               <p className="text-xs text-muted-foreground">{member.founderRole}</p>
             </div>
           ))}
