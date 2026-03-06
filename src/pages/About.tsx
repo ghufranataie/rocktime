@@ -1,4 +1,5 @@
 import { Users, Ticket, Globe, Star } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const stats = [
   { icon: Ticket, value: "1M+", label: "Tickets Sold" },
@@ -7,14 +8,31 @@ const stats = [
   { icon: Star, value: "4.9", label: "Average Rating" },
 ];
 
-const team = [
-  { name: "Sarah Chen", role: "CEO & Co-Founder", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face" },
-  { name: "Marcus Johnson", role: "CTO", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face" },
-  { name: "Emily Rodriguez", role: "Head of Design", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face" },
-  { name: "David Kim", role: "Head of Partnerships", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face" },
-];
+
+interface Founder {
+  id: number;
+  firstName: string;
+  lastName: string;
+  founderRole: string;
+  avatar: string;
+}
+// const team = [
+//   { name: "Sarah Chen", role: "CEO & Co-Founder", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face" },
+//   { name: "Marcus Johnson", role: "CTO", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face" },
+//   { name: "Emily Rodriguez", role: "Head of Design", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face" },
+//   { name: "David Kim", role: "Head of Partnerships", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face" },
+// ];
 
 export default function AboutPage() {
+  const [team, setTeam] = useState<Founder[]>([]);
+
+  useEffect(() => {
+    fetch("https://f3nnaj8z43.execute-api.us-east-1.amazonaws.com/dev/founders")
+      .then((res) => res.json())
+      .then((data) => setTeam(data))
+      .catch((err) => console.error(err));
+  }, []);
+  
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="container mx-auto px-4">
@@ -46,14 +64,14 @@ export default function AboutPage() {
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
           {team.map((member) => (
-            <div key={member.name} className="text-center group">
+            <div key={member.id} className="text-center group">
               <img
                 src={member.avatar}
-                alt={member.name}
+                alt={member.firstName}
                 className="w-24 h-24 rounded-full mx-auto mb-3 object-cover border-2 border-border group-hover:border-primary transition-colors"
               />
-              <p className="font-semibold text-sm">{member.name}</p>
-              <p className="text-xs text-muted-foreground">{member.role}</p>
+              <p className="font-semibold text-sm">{member.lastName}</p>
+              <p className="text-xs text-muted-foreground">{member.founderRole}</p>
             </div>
           ))}
         </div>
