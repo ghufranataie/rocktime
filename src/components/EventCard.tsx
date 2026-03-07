@@ -16,13 +16,31 @@ export default function EventCard({ event }: { event: Event }) {
           loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-        <span
+        {/* <span
           className={`absolute top-3 right-3 text-xs font-semibold px-3 py-1 rounded-full ${
-            event.availability === "selling-fast" ? "tag-selling-fast" : "tag-available"
+            event.availability === "passed" ? "tag-selling-fast" : "tag-available"
           }`}
         >
-          {event.availability === "selling-fast" ? "Selling Fast" : "Available"}
+          {event.availability === "passed" ? "Selling Fast" : "Available"}
+        </span> */}
+
+        <span
+          className={`absolute top-3 right-3 text-xs font-semibold px-3 py-1 rounded-full 
+            ${
+              event.availability === "available"
+                ? "bg-green-100 text-green-800"   // Available → green
+                : event.availability === "passed"
+                ? "bg-gray-300 text-gray-700"    // Passed → gray
+                : "bg-red-100 text-red-800"      // Housefull → red
+            }`}
+        >
+          {event.availability === "available"
+            ? "Available"
+            : event.availability === "passed"
+            ? "Passed"
+            : "Housefull"}
         </span>
+
         <span className="absolute bottom-3 left-3 text-golden-lg font-bold text-foreground">
           ${event.price}
         </span>
