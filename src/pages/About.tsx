@@ -53,7 +53,7 @@ export default function AboutPage() {
 
         {/* Team */}
         <div className="text-center mb-10">
-          <h2 className="text-golden-lg font-bold">The Developers Team Are</h2>
+          <h2 className="text-golden-lg font-bold">The Developers Team</h2>
           <p className="text-muted-foreground mt-2">The people behind your next experience</p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">

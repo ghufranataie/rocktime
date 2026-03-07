@@ -4,6 +4,7 @@ import { ArrowRight, Music, Theater, Laugh, Sparkles } from "lucide-react";
 import EventCard from "@/components/EventCard";
 import { fetchEvents, categories, Event } from "@/data/events";
 import heroBg from "@/assets/hero-bg.jpg";
+import Loader  from "@/components/loader";
 
 const iconMap: Record<string, React.ElementType> = {
   Music,
@@ -77,6 +78,11 @@ export default function HomePage() {
       </section>
 
       {/* Trending */}
+      
+
+
+
+
       <section className="container mx-auto px-4 pb-20">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-golden-lg font-bold">Trending Now</h2>
@@ -91,12 +97,18 @@ export default function HomePage() {
           {trending.length > 0 ? (
             trending.map((e) => <EventCard key={e.id} event={e} />)
           ) : (
-            <p className="text-muted-foreground col-span-full text-center">
-              Loading events...
-            </p>
+            <div className="col-span-full flex justify-center items-center py-10">
+              <div className="w-12 h-12 border-4 border-t-primary border-gray-200 rounded-full animate-spin"></div>
+            </div>
           )}
         </div>
       </section>
+
+
+
+
+
+
     </div>
   );
 }
