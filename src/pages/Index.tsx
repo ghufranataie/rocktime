@@ -78,11 +78,6 @@ export default function HomePage() {
       </section>
 
       {/* Trending */}
-      
-
-
-
-
       <section className="container mx-auto px-4 pb-20">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-golden-lg font-bold">Trending Now</h2>
@@ -103,12 +98,6 @@ export default function HomePage() {
           )}
         </div>
       </section>
-
-
-
-
-
-
     </div>
   );
 }

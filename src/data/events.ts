@@ -9,7 +9,7 @@ export interface Event {
   price: number;
   image: string;
   genre: string;
-  availability: "available" | "selling-fast";
+  availability: "available" | "passed";
   description: string;
   seats?: { total: number; taken: number[] };
 }
