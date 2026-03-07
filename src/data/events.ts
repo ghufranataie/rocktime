@@ -9,7 +9,7 @@ export interface Event {
   price: number;
   image: string;
   genre: string;
-  availability: "available" | "passed";
+  availability: "available" | "passed" | "housefull";
   description: string;
   seats?: { total: number; taken: number[] };
 }
@@ -41,9 +41,17 @@ export const fetchEvents = async (): Promise<Event[]> => {
         });
       });
 
-      let availability: "available" | "selling-fast" = "available";
-      if (item.availability?.toLowerCase() === "selling-fast") {
-        availability = "selling-fast";
+      // Map availability from API directly, fallback to "available"
+      const availabilityValues = ["available", "passed", "housefull"];
+      let availability: "available" | "passed" | "housefull" = "available";
+      if (
+        item.availability &&
+        availabilityValues.includes(item.availability.toLowerCase())
+      ) {
+        availability = item.availability.toLowerCase() as
+          | "available"
+          | "passed"
+          | "housefull";
       }
 
       return {
