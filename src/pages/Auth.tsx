@@ -12,9 +12,11 @@ type AuthTab = "login" | "register";
 interface LoggedInUser {
   username: string;
   email: string;
+  fullName?: string;
 }
 
 const STORAGE_KEY = "showtime_user";
+const USERS_STORAGE_KEY = "showtime_users";
 const AUTH_CHANGED_EVENT = "auth-changed";
 
 const getSavedUser = (): LoggedInUser | null => {
@@ -28,6 +30,21 @@ const getSavedUser = (): LoggedInUser | null => {
 
 const emitAuthChanged = () => {
   window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+};
+
+const readUsers = (): LoggedInUser[] => {
+  try {
+    const raw = localStorage.getItem(USERS_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as LoggedInUser[]) : [];
+  } catch {
+    return [];
+  }
+};
+
+const upsertUserDirectory = (user: LoggedInUser) => {
+  const users = readUsers().filter((item) => item.email !== user.email);
+  users.unshift(user);
+  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
 };
 
 const safeReadMessage = async (res: Response) => {
@@ -68,6 +85,7 @@ export default function AuthPage() {
 
   const persistUser = (user: LoggedInUser) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+    upsertUserDirectory(user);
     setCurrentUser(user);
     emitAuthChanged();
   };

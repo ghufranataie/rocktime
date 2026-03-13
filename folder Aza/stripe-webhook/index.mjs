@@ -21,6 +21,7 @@ import mysql from "mysql2/promise";
 
 // ---- AWS Secrets Manager setup ----
 const secretsClient = new SecretsManagerClient({ region: "us-east-1" });
+const SECRET_ID = process.env.SECRET_ID || "showtime228/stripe";
 
 // Cache secrets so we don't call Secrets Manager on every request
 let cachedSecrets = null;
@@ -33,7 +34,7 @@ async function getSecrets() {
   if (cachedSecrets) return cachedSecrets;
 
   const command = new GetSecretValueCommand({
-    SecretId: "showtime228/stripe", // <-- Same secret name as in create-checkout-session
+    SecretId: SECRET_ID, // <-- Same secret name as in create-checkout-session
   });
 
   const response = await secretsClient.send(command);
@@ -92,17 +93,48 @@ async function saveBookingToDatabase(connection, userId, orderItems, stripeSessi
   }
 }
 
+async function findUserIdByEmail(connection, email) {
+  if (!email) return null;
+
+  const [rows] = await connection.execute(
+    "SELECT id FROM users WHERE usrEmail = ? LIMIT 1",
+    [email]
+  );
+
+  if (rows.length === 0) {
+    return null;
+  }
+
+  return rows[0].id;
+}
+
 // ---- CORS Headers ----
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+const resolveOrigin = (event) => {
+  const origin = event?.headers?.origin || event?.headers?.Origin || "*";
+  const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  if (allowedOrigins.length === 0) {
+    return origin;
+  }
+
+  return allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
+};
+
+const getCorsHeaders = (event) => ({
+  "Access-Control-Allow-Origin": resolveOrigin(event),
   "Access-Control-Allow-Headers": "Content-Type,Stripe-Signature",
   "Access-Control-Allow-Methods": "POST,OPTIONS",
-};
+});
 
 // ============================================================
 // Main Lambda Handler
 // ============================================================
 export const handler = async (event) => {
+  const corsHeaders = getCorsHeaders(event);
+
   // Handle preflight CORS request
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 200, headers: corsHeaders, body: "" };
@@ -145,14 +177,31 @@ export const handler = async (event) => {
       console.log("Amount paid:", session.amount_total, "cents");
 
       // Get our custom data from metadata (we stored it when creating the session)
-      const userId = session.metadata.userId;
+      let userId = session.metadata.userId;
+      const userEmail = session.metadata.userEmail || session.customer_email;
       const orderItems = JSON.parse(session.metadata.orderItems);
+
+      if (!userId) {
+        connection = await getDbConnection(secrets);
+        userId = await findUserIdByEmail(connection, userEmail);
+      }
+
+      if (!userId) {
+        console.warn("Could not resolve user ID. Skipping booking save.");
+        return {
+          statusCode: 200,
+          headers: corsHeaders,
+          body: JSON.stringify({ received: true, warning: "User not found" }),
+        };
+      }
 
       console.log("User ID:", userId);
       console.log("Order items:", JSON.stringify(orderItems));
 
       // ---- Step 4: Save to database ----
-      connection = await getDbConnection(secrets);
+      if (!connection) {
+        connection = await getDbConnection(secrets);
+      }
       await saveBookingToDatabase(connection, userId, orderItems, session.id);
 
       console.log("Booking saved to database successfully!");

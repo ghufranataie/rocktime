@@ -1,32 +1,251 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CreditCard, Check, QrCode, ArrowLeft } from "lucide-react";
+import { Check, QrCode, ArrowLeft, CreditCard } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { reserveSeatsForEvent } from "@/data/events";
+import { useToast } from "@/components/ui/use-toast";
+
+const USERS_STORAGE_KEY = "showtime_users";
+const USER_STORAGE_KEY = "showtime_user";
+const TICKETS_STORAGE_KEY = "showtime_tickets";
+const PENDING_ORDER_KEY = "showtime_pending_order";
+const STRIPE_CHECKOUT_ENDPOINT =
+  import.meta.env.VITE_STRIPE_CHECKOUT_ENDPOINT ||
+  "https://f3nnaj8z43.execute-api.us-east-1.amazonaws.com/dev/checkout";
+
+interface StoredUser {
+  username: string;
+  email: string;
+  fullName?: string;
+}
+
+interface StoredTicket {
+  id: string;
+  orderId: string;
+  userEmail: string;
+  userName: string;
+  eventId: string;
+  eventTitle: string;
+  seatNumber: number;
+  eventDate: string;
+  eventTime: string;
+  venue: string;
+  pricePerSeat: number;
+  purchasedAt: string;
+}
+
+interface PendingOrder {
+  items: typeof initialItemsShape;
+  userEmail: string;
+  userName: string;
+}
+
+type CartSnapshotItem = {
+  eventId: string;
+  eventTitle: string;
+  seatNumbers: number[];
+  pricePerSeat: number;
+  date: string;
+  time: string;
+  venue: string;
+};
+
+const initialItemsShape: CartSnapshotItem[] = [];
+
+const readJson = <T,>(key: string, fallback: T): T => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const upsertUser = (user: StoredUser) => {
+  const users = readJson<StoredUser[]>(USERS_STORAGE_KEY, []);
+  const next = users.filter((item) => item.email !== user.email);
+  next.unshift(user);
+  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(next));
+};
 
 type Step = "review" | "details" | "payment" | "success";
+
+const getCurrentUser = () => readJson<StoredUser | null>(USER_STORAGE_KEY, null);
+
+const finalizeSuccessfulPayment = (
+  pendingOrder: PendingOrder,
+  clearCart: () => void,
+) => {
+  upsertUser({
+    username: pendingOrder.userEmail.split("@")[0],
+    email: pendingOrder.userEmail,
+    fullName: pendingOrder.userName,
+  });
+
+  const existingTickets = readJson<StoredTicket[]>(TICKETS_STORAGE_KEY, []);
+  const purchasedAt = new Date().toISOString();
+  const orderId = `ST-${Date.now().toString(36).toUpperCase()}`;
+
+  const newTickets: StoredTicket[] = pendingOrder.items.flatMap((item) =>
+    item.seatNumbers.map((seatNumber) => ({
+      id: `${item.eventId}-${seatNumber}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      orderId,
+      userEmail: pendingOrder.userEmail,
+      userName: pendingOrder.userName,
+      eventId: item.eventId,
+      eventTitle: item.eventTitle,
+      seatNumber,
+      eventDate: item.date,
+      eventTime: item.time,
+      venue: item.venue,
+      pricePerSeat: item.pricePerSeat,
+      purchasedAt,
+    })),
+  );
+
+  localStorage.setItem(TICKETS_STORAGE_KEY, JSON.stringify([...newTickets, ...existingTickets]));
+
+  pendingOrder.items.forEach((item) => {
+    reserveSeatsForEvent(item.eventId, item.seatNumbers);
+  });
+
+  localStorage.removeItem(PENDING_ORDER_KEY);
+  clearCart();
+  window.dispatchEvent(new Event("auth-changed"));
+};
 
 export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [step, setStep] = useState<Step>("review");
-  const [form, setForm] = useState({ name: "", email: "", card: "", expiry: "", cvv: "" });
+  const [form, setForm] = useState({ name: "", email: "" });
+  const [isRedirectingToStripe, setIsRedirectingToStripe] = useState(false);
   const tax = totalPrice * 0.08;
   const total = totalPrice + tax;
 
-  if (items.length === 0 && step !== "success") {
-    navigate("/cart");
-    return null;
-  }
+  const hasItems = items.length > 0;
+
+  useEffect(() => {
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+      setForm((prev) => ({
+        name: prev.name || currentUser.fullName || currentUser.username,
+        email: prev.email || currentUser.email,
+      }));
+    }
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const stripeStatus = params.get("stripe");
+
+    if (stripeStatus === "success") {
+      const pendingOrder = readJson<PendingOrder | null>(PENDING_ORDER_KEY, null);
+      if (pendingOrder && pendingOrder.items.length > 0) {
+        finalizeSuccessfulPayment(pendingOrder, clearCart);
+      }
+
+      setStep("success");
+      window.history.replaceState({}, "", "/checkout");
+      return;
+    }
+
+    if (stripeStatus === "cancel") {
+      toast({
+        title: "Payment cancelled",
+        description: "You can continue checkout when you are ready.",
+      });
+      window.history.replaceState({}, "", "/checkout");
+    }
+  }, [clearCart, toast]);
+
+  useEffect(() => {
+    if (!hasItems && step !== "success") {
+      navigate("/cart");
+    }
+  }, [hasItems, navigate, step]);
+
+  const checkoutPayloadItems = useMemo(
+    () =>
+      items.map((item) => ({
+        eventId: item.eventId,
+        eventTitle: item.eventTitle,
+        seatNumbers: item.seatNumbers,
+        pricePerSeat: item.pricePerSeat,
+        date: item.date,
+        time: item.time,
+        venue: item.venue,
+      })),
+    [items],
+  );
 
   const steps: { key: Step; label: string }[] = [
     { key: "review", label: "Review" },
     { key: "details", label: "Details" },
-    { key: "payment", label: "Payment" },
+    { key: "payment", label: "Stripe" },
   ];
 
-  const handlePay = () => {
-    clearCart();
-    setStep("success");
+  const handleStripeCheckout = async () => {
+    const userEmail = form.email.trim().toLowerCase();
+    const userName = form.name.trim();
+
+    if (!userEmail) {
+      toast({
+        title: "Email is required",
+        description: "Please add your email before payment.",
+      });
+      return;
+    }
+
+    const currentUser = getCurrentUser();
+
+    const pendingOrder: PendingOrder = {
+      items: checkoutPayloadItems,
+      userEmail,
+      userName: userName || currentUser?.fullName || currentUser?.username || "Guest",
+    };
+
+    localStorage.setItem(PENDING_ORDER_KEY, JSON.stringify(pendingOrder));
+
+    setIsRedirectingToStripe(true);
+
+    try {
+      const successUrl = `${window.location.origin}/checkout?stripe=success`;
+      const cancelUrl = `${window.location.origin}/checkout?stripe=cancel`;
+
+      const response = await fetch(STRIPE_CHECKOUT_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items: checkoutPayloadItems,
+          customerEmail: userEmail,
+          userId: currentUser?.username || "",
+          successUrl,
+          cancelUrl,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data?.error || data?.message || "Unable to start Stripe checkout");
+      }
+
+      if (!data?.url) {
+        throw new Error("Stripe checkout URL is missing");
+      }
+
+      window.location.href = data.url;
+    } catch (error) {
+      setIsRedirectingToStripe(false);
+      toast({
+        title: "Payment error",
+        description: error instanceof Error ? error.message : "Unable to start payment",
+      });
+    }
   };
 
   if (step === "success") {
@@ -106,18 +325,22 @@ export default function CheckoutPage() {
         {step === "payment" && (
           <div className="space-y-4 animate-fade-in">
             <div className="p-6 rounded-xl bg-card border border-border space-y-4">
-              <div className="flex items-center gap-2 mb-2"><CreditCard className="h-5 w-5 text-primary" /><span className="font-semibold">Card Payment</span></div>
-              <input value={form.card} onChange={(e) => setForm({ ...form, card: e.target.value })} className="w-full h-12 px-4 rounded-xl bg-secondary border border-border text-foreground focus:ring-2 focus:ring-primary/50 focus:outline-none" placeholder="1234 5678 9012 3456" />
-              <div className="grid grid-cols-2 gap-4">
-                <input value={form.expiry} onChange={(e) => setForm({ ...form, expiry: e.target.value })} className="h-12 px-4 rounded-xl bg-secondary border border-border text-foreground focus:ring-2 focus:ring-primary/50 focus:outline-none" placeholder="MM/YY" />
-                <input value={form.cvv} onChange={(e) => setForm({ ...form, cvv: e.target.value })} className="h-12 px-4 rounded-xl bg-secondary border border-border text-foreground focus:ring-2 focus:ring-primary/50 focus:outline-none" placeholder="CVV" />
+              <div className="flex items-center gap-2 mb-2"><CreditCard className="h-5 w-5 text-primary" /><span className="font-semibold">Pay with Stripe Checkout</span></div>
+              <p className="text-sm text-muted-foreground">
+                You will be redirected to Stripe secure payment page to finish your order.
+              </p>
+              <div className="text-sm text-muted-foreground">
+                <p>Email: <span className="text-foreground">{form.email || "Not set"}</span></p>
+                <p>Total: <span className="text-primary font-semibold">${total.toFixed(2)}</span></p>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <button className="py-3 rounded-xl bg-card border border-border text-foreground font-medium text-sm hover:bg-secondary transition-colors"> Pay with Apple Pay</button>
-              <button className="py-3 rounded-xl bg-card border border-border text-foreground font-medium text-sm hover:bg-secondary transition-colors"> Pay with Google Pay</button>
-            </div>
-            <button onClick={handlePay} className="w-full py-4 rounded-xl gradient-primary text-primary-foreground font-bold text-lg">Pay ${total.toFixed(2)}</button>
+            <button
+              onClick={handleStripeCheckout}
+              disabled={isRedirectingToStripe}
+              className="w-full py-4 rounded-xl bg-[#635bff] text-white font-bold text-lg hover:opacity-90 transition-opacity disabled:opacity-60"
+            >
+              {isRedirectingToStripe ? "Redirecting to Stripe..." : `Pay $${total.toFixed(2)} with Stripe`}
+            </button>
           </div>
         )}
       </div>

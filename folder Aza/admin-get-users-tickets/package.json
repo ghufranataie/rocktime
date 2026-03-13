@@ -1,0 +1,10 @@
+{
+  "name": "admin-get-users-tickets",
+  "version": "1.0.0",
+  "description": "Lambda function for admin dashboard users and ticket purchases",
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.0.0",
+    "mysql2": "^3.6.0"
+  }
+}

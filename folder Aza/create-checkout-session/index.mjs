@@ -19,6 +19,7 @@ import {
 
 // ---- AWS Secrets Manager setup ----
 const secretsClient = new SecretsManagerClient({ region: "us-east-1" });
+const SECRET_ID = process.env.SECRET_ID || "showtime228/stripe";
 
 // Cache the secret so we don't call Secrets Manager on every request
 let cachedStripeKey = null;
@@ -32,7 +33,7 @@ async function getStripeSecretKey() {
   if (cachedStripeKey) return cachedStripeKey;
 
   const command = new GetSecretValueCommand({
-    SecretId: "showtime228/stripe", // <-- This is the name of your secret in AWS
+    SecretId: SECRET_ID, // <-- This is the name of your secret in AWS
   });
 
   const response = await secretsClient.send(command);
@@ -43,16 +44,32 @@ async function getStripeSecretKey() {
 
 // ---- CORS Headers ----
 // These headers allow your S3 website to call this API
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*", // In production, replace * with your S3 website URL
+const resolveOrigin = (event) => {
+  const origin = event?.headers?.origin || event?.headers?.Origin || "*";
+  const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  if (allowedOrigins.length === 0) {
+    return origin;
+  }
+
+  return allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
+};
+
+const getCorsHeaders = (event) => ({
+  "Access-Control-Allow-Origin": resolveOrigin(event),
   "Access-Control-Allow-Headers": "Content-Type,Authorization",
   "Access-Control-Allow-Methods": "POST,OPTIONS",
-};
+});
 
 // ============================================================
 // Main Lambda Handler
 // ============================================================
 export const handler = async (event) => {
+  const corsHeaders = getCorsHeaders(event);
+
   // Handle preflight CORS request (browser sends this before the real request)
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 200, headers: corsHeaders, body: "" };
@@ -108,6 +125,8 @@ export const handler = async (event) => {
       quantity: item.seatNumbers.length,
     }));
 
+    const normalizedEmail = String(customerEmail || "").trim().toLowerCase();
+
     // ---- Step 4: Create Stripe Checkout Session ----
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -118,7 +137,8 @@ export const handler = async (event) => {
       // Metadata: we store our own data here so the webhook can read it later
       // This is how we know which user bought which seats for which event
       metadata: {
-        userId: String(userId),
+        userId: userId ? String(userId) : "",
+        userEmail: normalizedEmail,
         // Store items as JSON string (Stripe metadata values must be strings)
         orderItems: JSON.stringify(
           items.map((item) => ({

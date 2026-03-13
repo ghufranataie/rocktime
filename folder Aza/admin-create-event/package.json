@@ -1,0 +1,10 @@
+{
+  "name": "admin-create-event",
+  "version": "1.0.0",
+  "description": "Lambda function for creating events from admin panel",
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.0.0",
+    "mysql2": "^3.6.0"
+  }
+}

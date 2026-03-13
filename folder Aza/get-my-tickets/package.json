@@ -1,0 +1,10 @@
+{
+  "name": "get-my-tickets",
+  "version": "1.0.0",
+  "description": "Lambda function to return tickets for a user by email",
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.0.0",
+    "mysql2": "^3.6.0"
+  }
+}
