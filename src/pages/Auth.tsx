@@ -6,7 +6,6 @@ import { useToast } from "@/components/ui/use-toast";
 const API_BASE_URL = "https://f3nnaj8z43.execute-api.us-east-1.amazonaws.com/dev";
 const LOGIN_ENDPOINT = `${API_BASE_URL}/auth`;
 const REGISTER_ENDPOINT_CANDIDATES = [
-  `${API_BASE_URL}/register`,
   `${API_BASE_URL}/auth/register`,
   `${API_BASE_URL}/auth`,
 ];
