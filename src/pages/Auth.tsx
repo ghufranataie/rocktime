@@ -15,6 +15,7 @@ interface LoggedInUser {
 }
 
 const STORAGE_KEY = "showtime_user";
+const AUTH_CHANGED_EVENT = "auth-changed";
 
 const getSavedUser = (): LoggedInUser | null => {
   try {
@@ -23,6 +24,10 @@ const getSavedUser = (): LoggedInUser | null => {
   } catch {
     return null;
   }
+};
+
+const emitAuthChanged = () => {
+  window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
 };
 
 const safeReadMessage = async (res: Response) => {
@@ -58,11 +63,13 @@ export default function AuthPage() {
   const persistUser = (user: LoggedInUser) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
     setCurrentUser(user);
+    emitAuthChanged();
   };
 
   const handleLogout = () => {
     localStorage.removeItem(STORAGE_KEY);
     setCurrentUser(null);
+    emitAuthChanged();
     toast({
       title: "Signed out",
       description: "You have been logged out.",

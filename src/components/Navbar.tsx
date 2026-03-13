@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, ShoppingCart, User, Menu, X, Ticket } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, X, Ticket, LogOut } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
 const navLinks = [
@@ -12,8 +12,39 @@ const navLinks = [
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
   const { totalItems } = useCart();
   const location = useLocation();
+
+  useEffect(() => {
+    const readUser = () => {
+      try {
+        const raw = localStorage.getItem("showtime_user");
+        const user = raw ? (JSON.parse(raw) as { email?: string }) : null;
+        setCurrentUserEmail(user?.email || null);
+      } catch {
+        setCurrentUserEmail(null);
+      }
+    };
+
+    readUser();
+
+    window.addEventListener("storage", readUser);
+    window.addEventListener("auth-changed", readUser);
+    return () => {
+      window.removeEventListener("storage", readUser);
+      window.removeEventListener("auth-changed", readUser);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("showtime_user");
+    setCurrentUserEmail(null);
+    window.dispatchEvent(new Event("auth-changed"));
+    setMobileOpen(false);
+  };
+
+  const userLabel = currentUserEmail?.split("@")[0] || "Account";
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-border">
@@ -54,13 +85,33 @@ export default function Navbar() {
               </span>
             )}
           </Link>
-          <Link
-            to="/auth"
-            className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity"
-          >
-            <User className="h-4 w-4" />
-            Sign In
-          </Link>
+          {currentUserEmail ? (
+            <div className="hidden md:flex items-center gap-2">
+              <Link
+                to="/auth"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity"
+              >
+                <User className="h-4 w-4" />
+                {userLabel}
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="p-2 rounded-lg hover:bg-secondary transition-colors"
+                aria-label="Sign out"
+                title="Sign out"
+              >
+                <LogOut className="h-4 w-4 text-muted-foreground" />
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/auth"
+              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity"
+            >
+              <User className="h-4 w-4" />
+              Sign In
+            </Link>
+          )}
           <button
             className="md:hidden p-2 rounded-lg hover:bg-secondary transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -88,13 +139,31 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              to="/auth"
-              onClick={() => setMobileOpen(false)}
-              className="py-3 px-4 rounded-lg text-sm font-semibold bg-primary text-primary-foreground text-center mt-2"
-            >
-              Sign In
-            </Link>
+            {currentUserEmail ? (
+              <>
+                <Link
+                  to="/auth"
+                  onClick={() => setMobileOpen(false)}
+                  className="py-3 px-4 rounded-lg text-sm font-semibold bg-primary text-primary-foreground text-center mt-2"
+                >
+                  {userLabel}
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="py-3 px-4 rounded-lg text-sm font-semibold border border-border text-foreground text-center"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/auth"
+                onClick={() => setMobileOpen(false)}
+                className="py-3 px-4 rounded-lg text-sm font-semibold bg-primary text-primary-foreground text-center mt-2"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       )}
