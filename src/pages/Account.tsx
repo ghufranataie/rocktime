@@ -6,9 +6,11 @@ import { useToast } from "@/components/ui/use-toast";
 interface LoggedInUser {
   username: string;
   email: string;
+  fullName?: string;
 }
 
 const STORAGE_KEY = "showtime_user";
+const USERS_STORAGE_KEY = "showtime_users";
 
 const getSavedUser = (): LoggedInUser | null => {
   try {
@@ -16,6 +18,15 @@ const getSavedUser = (): LoggedInUser | null => {
     return raw ? (JSON.parse(raw) as LoggedInUser) : null;
   } catch {
     return null;
+  }
+};
+
+const getSavedUsers = (): LoggedInUser[] => {
+  try {
+    const raw = localStorage.getItem(USERS_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as LoggedInUser[]) : [];
+  } catch {
+    return [];
   }
 };
 
@@ -31,7 +42,14 @@ export default function AccountPage() {
       return;
     }
 
-    setUser(saved);
+    const knownUser = getSavedUsers().find(
+      (item) => item.email?.toLowerCase() === saved.email?.toLowerCase(),
+    );
+
+    setUser({
+      ...saved,
+      fullName: saved.fullName || knownUser?.fullName,
+    });
   }, [navigate]);
 
   const handleLogout = () => {
@@ -63,7 +81,9 @@ export default function AccountPage() {
             <User className="h-4 w-4 text-primary" />
             {user.email}
           </p>
-          <p className="text-sm text-muted-foreground mt-2">Username: {user.username}</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Full Name: {user.fullName || "Not set"}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 gap-3">
