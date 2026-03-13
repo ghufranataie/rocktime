@@ -41,6 +41,12 @@ const readUsers = (): LoggedInUser[] => {
   }
 };
 
+const findUserByEmail = (email: string): LoggedInUser | null => {
+  const normalizedEmail = email.trim().toLowerCase();
+  const users = readUsers();
+  return users.find((item) => item.email?.toLowerCase() === normalizedEmail) || null;
+};
+
 const upsertUserDirectory = (user: LoggedInUser) => {
   const users = readUsers().filter((item) => item.email !== user.email);
   users.unshift(user);
@@ -122,9 +128,12 @@ export default function AuthPage() {
       throw new Error(data?.message || "Unable to login. Please try again.");
     }
 
+    const existingUser = findUserByEmail(data.user.email || email.trim());
+
     persistUser({
       username: data.user.username,
       email: data.user.email,
+      fullName: data.user.fullName || data.user.usrFullName || existingUser?.fullName,
     });
 
     toast({
@@ -157,6 +166,7 @@ export default function AuthPage() {
     const registeredUser: LoggedInUser = {
       username: data?.user?.username || email.trim().split("@")[0],
       email: data?.user?.email || email.trim(),
+      fullName: data?.user?.fullName || data?.user?.fullname || fullName.trim(),
     };
 
     persistUser(registeredUser);
