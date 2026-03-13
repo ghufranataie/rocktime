@@ -5,10 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 const API_BASE_URL = "https://f3nnaj8z43.execute-api.us-east-1.amazonaws.com/dev";
 const LOGIN_ENDPOINT = `${API_BASE_URL}/auth`;
-const REGISTER_ENDPOINT_CANDIDATES = [
-  `${API_BASE_URL}/auth/register`,
-  `${API_BASE_URL}/auth`,
-];
+const REGISTER_ENDPOINT = `${API_BASE_URL}/register`;
 
 type AuthTab = "login" | "register";
 
@@ -108,59 +105,30 @@ export default function AuthPage() {
   };
 
   const handleRegister = async () => {
-    const registerPayloads = [
-      {
-        username: email.trim(),
+    const response = await fetch(REGISTER_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        fullName: fullName.trim(),
         email: email.trim(),
         password,
-        fullName: fullName.trim(),
-      },
-      {
-        email: email.trim(),
-        password,
-        fullName: fullName.trim(),
-      },
-      {
-        action: "register",
-        username: email.trim(),
-        password,
-        fullName: fullName.trim(),
-      },
-    ];
+      }),
+    });
 
-    let endpointNotFound = true;
-
-    for (const endpoint of REGISTER_ENDPOINT_CANDIDATES) {
-      for (const payload of registerPayloads) {
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
-
-        if (response.ok) {
-          toast({
-            title: "Registration successful",
-            description: "Your account was created. Please sign in.",
-          });
-          setTab("login");
-          setPassword("");
-          setConfirmPassword("");
-          return;
-        }
-
-        if (response.status !== 404 && response.status !== 405) {
-          const message = await safeReadMessage(response);
-          throw new Error(message || "Registration failed.");
-        }
-      }
+    if (!response.ok) {
+      const message = await safeReadMessage(response);
+      throw new Error(message || "Registration failed.");
     }
 
-    if (endpointNotFound) {
-      throw new Error("Registration endpoint not found. Please check API Gateway routes.");
-    }
+    toast({
+      title: "Registration successful",
+      description: "Your account was created. Please sign in.",
+    });
+    setTab("login");
+    setPassword("");
+    setConfirmPassword("");
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
