@@ -313,16 +313,6 @@ export default function AuthPage() {
             {isSubmitting ? "Please wait..." : buttonText}
           </button>
 
-          <div className="flex items-center gap-3 my-4">
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-xs text-muted-foreground">or continue with</span>
-            <div className="flex-1 h-px bg-border" />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <button type="button" className="py-3 rounded-xl bg-secondary border border-border text-foreground text-sm font-medium hover:bg-surface-hover transition-colors">Google</button>
-            <button type="button" className="py-3 rounded-xl bg-secondary border border-border text-foreground text-sm font-medium hover:bg-surface-hover transition-colors">Apple</button>
-          </div>
         </form>
       </div>
     </div>
