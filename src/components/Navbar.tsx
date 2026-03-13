@@ -88,7 +88,7 @@ export default function Navbar() {
           {currentUserEmail ? (
             <div className="hidden md:flex items-center gap-2">
               <Link
-                to="/auth"
+                to="/account"
                 className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity"
               >
                 <User className="h-4 w-4" />
@@ -142,7 +142,7 @@ export default function Navbar() {
             {currentUserEmail ? (
               <>
                 <Link
-                  to="/auth"
+                  to="/account"
                   onClick={() => setMobileOpen(false)}
                   className="py-3 px-4 rounded-lg text-sm font-semibold bg-primary text-primary-foreground text-center mt-2"
                 >

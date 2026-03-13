@@ -55,6 +55,12 @@ export default function AuthPage() {
     setCurrentUser(getSavedUser());
   }, []);
 
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/account", { replace: true });
+    }
+  }, [currentUser, navigate]);
+
   const buttonText = useMemo(
     () => (tab === "login" ? "Sign In" : "Create Account"),
     [tab],
@@ -108,7 +114,7 @@ export default function AuthPage() {
       description: `Welcome back, ${data.user.email}`,
     });
 
-    navigate("/");
+    navigate("/account");
   };
 
   const handleRegister = async () => {
@@ -124,18 +130,28 @@ export default function AuthPage() {
       }),
     });
 
+    const data = await response.json().catch(() => ({}));
+
     if (!response.ok) {
-      const message = await safeReadMessage(response);
-      throw new Error(message || "Registration failed.");
+      throw new Error(data?.message || "Registration failed.");
     }
+
+    const registeredUser: LoggedInUser = {
+      username: data?.user?.username || email.trim().split("@")[0],
+      email: data?.user?.email || email.trim(),
+    };
+
+    persistUser(registeredUser);
 
     toast({
       title: "Registration successful",
-      description: "Your account was created. Please sign in.",
+      description: "Your account was created.",
     });
+
     setTab("login");
     setPassword("");
     setConfirmPassword("");
+    navigate("/account");
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
