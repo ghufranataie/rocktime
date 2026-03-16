@@ -14,6 +14,7 @@ const STRIPE_CHECKOUT_ENDPOINT =
   "https://f3nnaj8z43.execute-api.us-east-1.amazonaws.com/dev/checkout";
 
 interface StoredUser {
+  id?: number;
   username: string;
   email: string;
   fullName?: string;
@@ -222,7 +223,7 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           items: checkoutPayloadItems,
           customerEmail: userEmail,
-          userId: currentUser?.username || "",
+          userId: currentUser?.id || "",
           successUrl,
           cancelUrl,
         }),

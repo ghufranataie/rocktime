@@ -10,6 +10,7 @@ const REGISTER_ENDPOINT = `${API_BASE_URL}/register`;
 type AuthTab = "login" | "register";
 
 interface LoggedInUser {
+  id?: number;
   username: string;
   email: string;
   fullName?: string;
@@ -131,6 +132,7 @@ export default function AuthPage() {
     const existingUser = findUserByEmail(data.user.email || email.trim());
 
     persistUser({
+      id: Number(data.user.id || data.user.usrID || 0) || undefined,
       username: data.user.username,
       email: data.user.email,
       fullName: data.user.fullName || data.user.usrFullName || existingUser?.fullName,
@@ -164,6 +166,7 @@ export default function AuthPage() {
     }
 
     const registeredUser: LoggedInUser = {
+      id: Number(data?.user?.id || data?.user?.usrID || 0) || undefined,
       username: data?.user?.username || email.trim().split("@")[0],
       email: data?.user?.email || email.trim(),
       fullName: data?.user?.fullName || data?.user?.fullname || fullName.trim(),
