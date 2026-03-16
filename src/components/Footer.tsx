@@ -32,9 +32,9 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-sm mb-3">Legal</h4>
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <span>Privacy Policy</span>
-              <span>Terms of Service</span>
-              <span>Refund Policy</span>
+              <Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+              <Link to="/terms-of-service" className="hover:text-primary transition-colors">Terms of Service</Link>
+              <Link to="/refund-policy" className="hover:text-primary transition-colors">Refund Policy</Link>
             </div>
           </div>
         </div>
