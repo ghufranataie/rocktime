@@ -35,6 +35,10 @@ export interface CreateAdminEventInput {
   seatsPerRow: number;
 }
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://f3nnaj8z43.execute-api.us-east-1.amazonaws.com/dev";
+
 export const ADMIN_EVENTS_STORAGE_KEY = "showtime_admin_events";
 const TAKEN_SEATS_STORAGE_KEY = "showtime_taken_seats";
 
@@ -91,7 +95,7 @@ const mergeTakenSeats = (event: Event, localSeatMap: Record<string, number[]>) =
 };
 
 const fetchApiEvents = async (): Promise<Event[]> => {
-  const res = await fetch("https://f3nnaj8z43.execute-api.us-east-1.amazonaws.com/dev/events");
+  const res = await fetch(`${API_BASE_URL}/events`);
 
   if (!res.ok) {
     throw new Error("Failed to fetch events");
@@ -132,6 +136,38 @@ const fetchApiEvents = async (): Promise<Event[]> => {
       seats: { total: totalTickets, taken: takenSeats },
     } as Event;
   });
+};
+
+export const createEventViaApi = async (payload: CreateAdminEventInput) => {
+  const totalTickets = Math.max(1, Number(payload.rows || 1)) * Math.max(1, Number(payload.seatsPerRow || 1));
+
+  const response = await fetch(`${API_BASE_URL}/events`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      shwTitle: payload.title.trim(),
+      shwArtist: payload.artist.trim(),
+      shwCategory: payload.genre.trim(),
+      shwDate: payload.date,
+      shwTime: payload.time,
+      shwLocation: payload.venue.trim(),
+      shwCity: payload.city.trim(),
+      shwImage: payload.image?.trim() || defaultEventImage,
+      shwDetails: payload.description.trim() || "Event created by admin",
+      shwTotalTickets: totalTickets,
+      shwTicketPrice: Number(payload.price || 0),
+    }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(data?.message || "Failed to create event");
+  }
+
+  return data;
 };
 
 // Fetch events from AWS API Gateway and map to Event[]

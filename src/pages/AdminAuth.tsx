@@ -18,7 +18,7 @@ export default function AdminAuthPage() {
     }
   }, [navigate]);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!email.trim() || !password) {
@@ -30,23 +30,24 @@ export default function AdminAuthPage() {
     }
 
     setIsSubmitting(true);
-    const session = loginAdmin(email, password);
 
-    if (!session) {
+    try {
+      const session = await loginAdmin(email, password);
+
+      toast({
+        title: "Welcome",
+        description: `${session.name} signed in successfully.`,
+      });
+
+      navigate("/admin", { replace: true });
+    } catch (error) {
       toast({
         title: "Access denied",
-        description: "Invalid admin credentials.",
+        description: error instanceof Error ? error.message : "Invalid admin credentials.",
       });
+    } finally {
       setIsSubmitting(false);
-      return;
     }
-
-    toast({
-      title: "Welcome",
-      description: `${session.name} signed in successfully.`,
-    });
-
-    navigate("/admin", { replace: true });
   };
 
   return (
@@ -98,10 +99,6 @@ export default function AdminAuthPage() {
             {isSubmitting ? "Please wait..." : "Sign In as Admin"}
           </button>
         </form>
-
-        <div className="mt-6 p-3 rounded-lg bg-secondary border border-border text-xs text-muted-foreground">
-          Demo credentials: admin@showtime.com / Admin123!
-        </div>
       </div>
     </div>
   );

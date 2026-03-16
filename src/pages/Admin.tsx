@@ -2,48 +2,43 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Shield, Users, Ticket, CalendarPlus, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { createAdminEvent, fetchEvents, Event } from "@/data/events";
+import { createEventViaApi, fetchEvents, Event } from "@/data/events";
 import { getAdminSession, getAdminAuthEventName, logoutAdmin } from "@/lib/adminAuth";
 
-const USERS_STORAGE_KEY = "showtime_users";
-const TICKETS_STORAGE_KEY = "showtime_tickets";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://f3nnaj8z43.execute-api.us-east-1.amazonaws.com/dev";
 
-interface StoredUser {
+interface ApiUser {
+  usrID?: number;
+  usrName?: string;
+  usrFullName?: string;
+  usrEmail?: string;
+
+  id?: number;
   username: string;
-  email: string;
   fullName?: string;
+  email: string;
 }
 
-interface StoredTicket {
-  id: string;
-  orderId: string;
-  userEmail: string;
-  userName: string;
-  eventId: string;
-  eventTitle: string;
-  seatNumber: number;
-  eventDate: string;
-  eventTime: string;
-  venue: string;
-  pricePerSeat: number;
-  purchasedAt: string;
+interface ApiTicket {
+  showID: number;
+  showTitle: string;
+  bookingID: number;
+  bookingBy: string;
+  seatNo: number;
+  payMethod: string;
+  price: string;
+  payRef: string;
+  bookingStatus: string;
 }
-
-const readJson = <T,>(key: string, fallback: T): T => {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
-  } catch {
-    return fallback;
-  }
-};
 
 export default function AdminPage() {
   const [authorized, setAuthorized] = useState(false);
   const [adminName, setAdminName] = useState("");
   const [events, setEvents] = useState<Event[]>([]);
-  const [users, setUsers] = useState<StoredUser[]>([]);
-  const [tickets, setTickets] = useState<StoredTicket[]>([]);
+  const [users, setUsers] = useState<ApiUser[]>([]);
+  const [tickets, setTickets] = useState<ApiTicket[]>([]);
   const [creating, setCreating] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -64,11 +59,30 @@ export default function AdminPage() {
 
   const eventCategories = ["Concerts", "Theater", "Comedy"];
 
+  const normalizeUser = (user: ApiUser): ApiUser => ({
+    ...user,
+    username: user.username || user.usrName || "unknown",
+    email: user.email || user.usrEmail || "",
+    fullName: user.fullName || user.usrFullName || "",
+  });
+
   const loadData = async () => {
-    const [fetchedEvents] = await Promise.all([fetchEvents()]);
+    const [fetchedEvents, usersRes, ticketsRes] = await Promise.all([
+      fetchEvents(),
+      fetch(`${API_BASE_URL}/users`),
+      fetch(`${API_BASE_URL}/tickets`),
+    ]);
+
     setEvents(fetchedEvents);
-    setUsers(readJson<StoredUser[]>(USERS_STORAGE_KEY, []));
-    setTickets(readJson<StoredTicket[]>(TICKETS_STORAGE_KEY, []));
+
+    const usersData = await usersRes.json().catch(() => []);
+    const normalizedUsers = Array.isArray(usersData)
+      ? usersData.map((user) => normalizeUser(user as ApiUser))
+      : [];
+    setUsers(normalizedUsers.filter((user) => !!user.email));
+
+    const ticketsData = await ticketsRes.json().catch(() => ({}));
+    setTickets(Array.isArray(ticketsData?.body) ? ticketsData.body : []);
   };
 
   useEffect(() => {
@@ -113,27 +127,19 @@ export default function AdminPage() {
   };
 
   const ticketsByUser = useMemo(() => {
-    return tickets.reduce<Record<string, StoredTicket[]>>((acc, ticket) => {
-      acc[ticket.userEmail] = [...(acc[ticket.userEmail] || []), ticket];
+    return tickets.reduce<Record<string, ApiTicket[]>>((acc, ticket) => {
+      const key = (ticket.bookingBy || "").toLowerCase();
+      if (!key) return acc;
+      acc[key] = [...(acc[key] || []), ticket];
       return acc;
     }, {});
   }, [tickets]);
 
   const usersWithFallback = useMemo(() => {
-    const map = new Map<string, StoredUser>();
+    const map = new Map<string, ApiUser>();
 
     users.forEach((user) => {
       map.set(user.email, user);
-    });
-
-    Object.keys(ticketsByUser).forEach((email) => {
-      if (!map.has(email)) {
-        map.set(email, {
-          username: email.split("@")[0],
-          email,
-          fullName: ticketsByUser[email][0]?.userName,
-        });
-      }
     });
 
     return Array.from(map.values());
@@ -145,42 +151,60 @@ export default function AdminPage() {
     event.preventDefault();
 
     if (!form.title || !form.artist || !form.date || !form.time || !form.venue || !form.city) {
+      toast({
+        title: "Missing fields",
+        description: "Please fill all required event fields.",
+      });
       return;
     }
 
     setCreating(true);
-    createAdminEvent({
-      title: form.title,
-      artist: form.artist,
-      date: form.date,
-      time: form.time,
-      venue: form.venue,
-      city: form.city,
-      price: Number(form.price),
-      image: form.image,
-      genre: form.genre,
-      description: form.description || "Event created by admin",
-      rows: Number(form.rows),
-      seatsPerRow: Number(form.seatsPerRow),
-    });
 
-    setForm({
-      title: "",
-      artist: "",
-      date: "",
-      time: "",
-      venue: "",
-      city: "",
-      price: 50,
-      image: "",
-      genre: "Concerts",
-      description: "",
-      rows: 10,
-      seatsPerRow: 10,
-    });
+    try {
+      await createEventViaApi({
+        title: form.title,
+        artist: form.artist,
+        date: form.date,
+        time: form.time,
+        venue: form.venue,
+        city: form.city,
+        price: Number(form.price),
+        image: form.image,
+        genre: form.genre,
+        description: form.description || "Event created by admin",
+        rows: Number(form.rows),
+        seatsPerRow: Number(form.seatsPerRow),
+      });
 
-    await loadData();
-    setCreating(false);
+      toast({
+        title: "Event created",
+        description: "New event was added successfully.",
+      });
+
+      setForm({
+        title: "",
+        artist: "",
+        date: "",
+        time: "",
+        venue: "",
+        city: "",
+        price: 50,
+        image: "",
+        genre: "Concerts",
+        description: "",
+        rows: 10,
+        seatsPerRow: 10,
+      });
+
+      await loadData();
+    } catch (error) {
+      toast({
+        title: "Create failed",
+        description: error instanceof Error ? error.message : "Unable to create event",
+      });
+    } finally {
+      setCreating(false);
+    }
   };
 
   if (!authorized) {
@@ -314,8 +338,9 @@ export default function AdminPage() {
               )}
 
               {usersWithFallback.map((user) => {
-                const userTickets = ticketsByUser[user.email] || [];
-                const totalSpent = userTickets.reduce((sum, ticket) => sum + ticket.pricePerSeat, 0);
+                const matchKey = (user.fullName || user.username || "").toLowerCase();
+                const userTickets = ticketsByUser[matchKey] || [];
+                const totalSpent = userTickets.reduce((sum, ticket) => sum + Number(ticket.price || 0), 0);
                 return (
                   <div key={user.email} className="p-4 rounded-lg bg-secondary border border-border">
                     <div className="flex items-start justify-between gap-2">
@@ -332,8 +357,8 @@ export default function AdminPage() {
                     {userTickets.length > 0 && (
                       <div className="mt-3 space-y-1">
                         {userTickets.slice(0, 5).map((ticket) => (
-                          <p key={ticket.id} className="text-xs text-muted-foreground">
-                            {ticket.eventTitle} · Seat {ticket.seatNumber} · ${ticket.pricePerSeat}
+                          <p key={ticket.bookingID} className="text-xs text-muted-foreground">
+                            {ticket.showTitle} · Seat {ticket.seatNo} · ${ticket.price}
                           </p>
                         ))}
                         {userTickets.length > 5 && (
