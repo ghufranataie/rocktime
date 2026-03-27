@@ -11,7 +11,7 @@ const TICKETS_STORAGE_KEY = "showtime_tickets";
 const PENDING_ORDER_KEY = "showtime_pending_order";
 const STRIPE_CHECKOUT_ENDPOINT =
   import.meta.env.VITE_STRIPE_CHECKOUT_ENDPOINT ||
-  "https://f3nnaj8z43.execute-api.us-east-1.amazonaws.com/dev/checkout";
+  "https://f3nnaj8z43.execute-api.us-east-1.amazonaws.com/dev/booking";
 
 interface StoredUser {
   id?: number;
