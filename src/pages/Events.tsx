@@ -16,6 +16,7 @@ export default function EventsPage() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 300]);
   const [availability, setAvailability] = useState<"all" | "available" | "selling-fast">("all");
+  const [sortOrder, setSortOrder] = useState<"date" | "price">("date");
 
   // Fetch events on mount
   useEffect(() => {
@@ -23,7 +24,7 @@ export default function EventsPage() {
   }, []);
 
   const filtered = useMemo(() => {
-    return events.filter((e) => {
+    let result = events.filter((e) => {
       if (genre !== "All" && e.genre !== genre) return false;
       if (
         query &&
@@ -35,7 +36,16 @@ export default function EventsPage() {
       if (availability !== "all" && e.availability !== availability) return false;
       return true;
     });
-  }, [events, query, genre, priceRange, availability]);
+
+    result.sort((a, b) => {
+      if (sortOrder === "date") {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      }
+      return a.price - b.price;
+    });
+
+    return result;
+  }, [events, query, genre, priceRange, availability, sortOrder]);
 
   return (
     <div className="min-h-screen pt-24 pb-16">
@@ -57,6 +67,14 @@ export default function EventsPage() {
               className="w-full h-12 pl-11 pr-4 rounded-xl bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition"
             />
           </div>
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value as "date" | "price")}
+            className="h-12 px-4 rounded-xl bg-card border border-border focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors cursor-pointer text-sm font-medium"
+          >
+            <option value="date">Sort by Date</option>
+            <option value="price">Sort by Price</option>
+          </select>
           <button
             onClick={() => setFilterOpen(!filterOpen)}
             className="h-12 px-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-colors flex items-center gap-2 text-sm font-medium"
