@@ -12,6 +12,7 @@ export default function EventDetailPage() {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
+  const [bookedSeats, setBookedSeats] = useState<any[]>([]);
 
   // Fetch event by ID
   useEffect(() => {
@@ -21,6 +22,18 @@ export default function EventDetailPage() {
         setEvent(found);
       })
       .finally(() => setLoading(false));
+
+    if (id && !id.startsWith("local-")) {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://f3nnaj8z43.execute-api.us-east-1.amazonaws.com/dev";
+      fetch(`${API_BASE_URL}/tickets?shwID=${id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.body && Array.isArray(data.body)) {
+            setBookedSeats(data.body);
+          }
+        })
+        .catch((err) => console.error("Error fetching tickets:", err));
+    }
   }, [id]);
 
   if (loading) {
@@ -39,8 +52,12 @@ export default function EventDetailPage() {
     );
   }
 
-  const taken = event.seats?.taken || [];
+  const serverTaken = bookedSeats.map(b => Number(b.seatNo)).filter(n => !isNaN(n));
+  const taken = Array.from(new Set([...(event.seats?.taken || []), ...serverTaken]));
   const totalSeats = event.seats?.total || 60;
+  
+  const availableSeats = Math.max(0, totalSeats - bookedSeats.length);
+  const isSoldOut = availableSeats === 0;
 
   const toggleSeat = (seat: number) => {
     if (taken.includes(seat)) return;
@@ -117,7 +134,12 @@ export default function EventDetailPage() {
           {/* Seat map */}
           <div className="lg:col-span-2">
             <div className="p-6 rounded-xl bg-card border border-border">
-              <h3 className="font-semibold mb-2">Select Your Seats</h3>
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-semibold">Select Your Seats</h3>
+                <span className={`px-3 py-1 text-sm rounded-full font-medium ${isSoldOut ? 'bg-destructive/10 text-destructive' : 'bg-primary/10 text-primary'}`}>
+                  {availableSeats} seats available
+                </span>
+              </div>
 
               {/* Legend */}
               <div className="flex gap-6 mb-6 text-xs text-muted-foreground">
@@ -174,10 +196,11 @@ export default function EventDetailPage() {
                   </div>
                   <button
                     onClick={handleAddToCart}
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl gradient-primary text-primary-foreground font-bold hover:opacity-90 transition-opacity"
+                    disabled={isSoldOut}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-xl gradient-primary text-primary-foreground font-bold transition-opacity ${isSoldOut ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'}`}
                   >
                     <ShoppingCart className="h-4 w-4" />
-                    Add to Cart
+                    {isSoldOut ? "Sold Out" : "Add to Cart"}
                   </button>
                 </div>
               )}
