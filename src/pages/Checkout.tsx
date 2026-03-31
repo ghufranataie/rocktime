@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, QrCode, ArrowLeft, CreditCard } from "lucide-react";
+import { ArrowLeft, CreditCard } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { reserveSeatsForEvent } from "@/data/events";
 import { useToast } from "@/components/ui/use-toast";
@@ -149,6 +149,21 @@ export default function CheckoutPage() {
 
       setStep("success");
       window.history.replaceState({}, "", "/checkout");
+
+      const currentUser = getCurrentUser();
+      if (currentUser?.id) {
+        toast({
+          title: "Booking Confirmed!",
+          description: "Your tickets have been successfully booked.",
+        });
+        navigate("/account", { replace: true });
+      } else {
+        toast({
+          title: "Booking Confirmed!",
+          description: "You successfully bought tickets. Check your email for details.",
+        });
+        navigate("/", { replace: true });
+      }
       return;
     }
 
@@ -252,24 +267,6 @@ export default function CheckoutPage() {
     }
   };
 
-  if (step === "success") {
-    return (
-      <div className="min-h-screen pt-24 flex flex-col items-center justify-center gap-6 px-4 text-center">
-        <div className="w-20 h-20 rounded-full gradient-primary flex items-center justify-center shadow-glow animate-fade-in">
-          <Check className="h-10 w-10 text-primary-foreground" />
-        </div>
-        <h1 className="text-golden-xl font-black">Booking Confirmed!</h1>
-        <p className="text-muted-foreground max-w-md">Your tickets have been booked. Show the QR code below at the venue entrance.</p>
-        <div className="p-8 rounded-xl bg-card border border-border">
-          <QrCode className="h-32 w-32 text-primary mx-auto" />
-          <p className="mt-4 text-xs text-muted-foreground">Order #ST-{Date.now().toString(36).toUpperCase()}</p>
-        </div>
-        <button onClick={() => navigate("/")} className="px-6 py-3 rounded-xl gradient-primary text-primary-foreground font-bold">
-          Back to Home
-        </button>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen pt-24 pb-16">

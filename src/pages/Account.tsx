@@ -107,7 +107,7 @@ export default function AccountPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 relative">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" />
-      <div className="relative w-full max-w-md p-8 rounded-2xl bg-card border border-border shadow-elevated animate-fade-in">
+      <div className="relative w-full max-w-lg p-8 rounded-2xl bg-card border border-border shadow-elevated animate-fade-in">
         <div className="flex items-center justify-center gap-2 mb-8">
           <Ticket className="h-8 w-8 text-primary" />
           <span className="text-2xl font-bold">My <span className="text-primary">Account</span></span>
@@ -134,11 +134,55 @@ export default function AccountPage() {
             <p className="text-xs text-muted-foreground">No tickets found for this account.</p>
           )}
           {!loadingTickets && tickets.length > 0 && (
-            <div className="space-y-1 max-h-40 overflow-y-auto pr-1">
+            <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2 pb-2 mt-4 custom-scrollbar">
               {tickets.map((ticket) => (
-                <p key={ticket.bookingID} className="text-xs text-muted-foreground">
-                  {ticket.showTitle} · Seat {ticket.seatNo} · {ticket.bookingStatus}
-                </p>
+                <div key={ticket.bookingID} className="relative flex rounded-xl overflow-hidden border border-border bg-card shadow-sm group hover:shadow-md transition-all duration-300">
+                  {/* Left side: Main ticket info */}
+                  <div className="flex-1 p-5 border-r-2 border-dashed border-border/60 relative bg-gradient-to-br from-card to-secondary/30">
+                    {/* Semi-circle cutouts (top & bottom) on the tear line */}
+                    <div className="absolute top-[-10px] right-[-10px] h-5 w-5 rounded-full bg-secondary border border-border/40 shadow-inner z-10" />
+                    <div className="absolute bottom-[-10px] right-[-10px] h-5 w-5 rounded-full bg-secondary border border-border/40 shadow-inner z-10" />
+                    
+                    <div className="flex gap-4 items-start mb-2">
+                      <h3 className="font-bold text-foreground text-lg leading-tight truncate flex-1" title={ticket.showTitle}>
+                        {ticket.showTitle}
+                      </h3>
+                      <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider h-fit border ${
+                        ticket.bookingStatus === 'Booked' 
+                          ? 'bg-primary/10 text-primary border-primary/20' 
+                          : 'bg-destructive/10 text-destructive border-destructive/20'
+                      }`}>
+                        {ticket.bookingStatus}
+                      </span>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-y-4 gap-x-2 mt-6 text-sm">
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-1.5">Booking Ref</p>
+                        <p className="font-mono text-foreground/80 text-xs py-1 px-2 bg-background/50 rounded-md border border-border/50 w-fit">
+                          #{ticket.bookingID.toString().padStart(6, '0')}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-1.5">Booked By</p>
+                        <p className="text-foreground/90 text-xs truncate font-medium max-w-[120px]" title={ticket.bookingBy}>
+                          {ticket.bookingBy}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Right side: Tear-off Stub */}
+                  <div className="w-28 bg-primary/[0.03] p-4 flex flex-col justify-center items-center text-center relative border-l border-primary/10">
+                     <p className="text-[10px] text-primary/70 uppercase font-black tracking-[0.2em] mb-1">Seat</p>
+                     <p className="text-4xl font-black text-primary drop-shadow-sm">{ticket.seatNo}</p>
+                     
+                     <div className="mt-4 pt-3 border-t border-primary/10 w-full">
+                       <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">{ticket.payMethod}</p>
+                       <p className="text-sm font-black text-foreground/80 mt-0.5">${ticket.price}</p>
+                     </div>
+                  </div>
+                </div>
               ))}
             </div>
           )}
