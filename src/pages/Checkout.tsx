@@ -221,9 +221,12 @@ export default function CheckoutPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          items: checkoutPayloadItems,
-          customerEmail: userEmail,
-          userId: currentUser?.id || "",
+          items: checkoutPayloadItems.map(item => ({
+            eventId: String(item.eventId),
+            seatNumbers: item.seatNumbers,
+            pricePerSeat: item.pricePerSeat
+          })),
+          userID: String(currentUser?.id || "1"),
           successUrl,
           cancelUrl,
         }),
