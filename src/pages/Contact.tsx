@@ -13,15 +13,15 @@ export default function ContactPage() {
           <div className="p-8 rounded-xl bg-card border border-border space-y-6">
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-xl bg-primary/10"><MapPin className="h-5 w-5 text-primary" /></div>
-              <div><h4 className="font-semibold text-sm">Address</h4><p className="text-sm text-muted-foreground">123 Broadway, New York, NY 10001</p></div>
+              <div><h4 className="font-semibold text-sm">Address</h4><p className="text-sm text-muted-foreground">1750 Finch Ave E, North York, ON M2J 2X5</p></div>
             </div>
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-xl bg-primary/10"><Phone className="h-5 w-5 text-primary" /></div>
-              <div><h4 className="font-semibold text-sm">Phone</h4><p className="text-sm text-muted-foreground">+1 (555) 123-4567</p></div>
+              <div><h4 className="font-semibold text-sm">Phone</h4><p className="text-sm text-muted-foreground">+1 (647) 821-9911</p></div>
             </div>
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-xl bg-primary/10"><Mail className="h-5 w-5 text-primary" /></div>
-              <div><h4 className="font-semibold text-sm">Email</h4><p className="text-sm text-muted-foreground">hello@showtime.com</p></div>
+              <div><h4 className="font-semibold text-sm">Email</h4><p className="text-sm text-muted-foreground">info@rocktime.com</p></div>
             </div>
           </div>
           {/* Map placeholder */}
@@ -29,7 +29,7 @@ export default function ContactPage() {
             <div className="text-center text-muted-foreground">
               <MapPin className="h-10 w-10 mx-auto mb-2 text-primary/40" />
               <p className="text-sm">Map View</p>
-              <p className="text-xs">123 Broadway, New York</p>
+              <p className="text-xs">1750 Finch Ave E, North York</p>
             </div>
           </div>
         </div>
