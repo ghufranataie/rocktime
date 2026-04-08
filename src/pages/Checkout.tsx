@@ -5,10 +5,10 @@ import { useCart } from "@/context/CartContext";
 import { reserveSeatsForEvent } from "@/data/events";
 import { useToast } from "@/components/ui/use-toast";
 
-const USERS_STORAGE_KEY = "showtime_users";
-const USER_STORAGE_KEY = "showtime_user";
-const TICKETS_STORAGE_KEY = "showtime_tickets";
-const PENDING_ORDER_KEY = "showtime_pending_order";
+const USERS_STORAGE_KEY = "rocktime_users";
+const USER_STORAGE_KEY = "rocktime_user";
+const TICKETS_STORAGE_KEY = "rocktime_tickets";
+const PENDING_ORDER_KEY = "rocktime_pending_order";
 const STRIPE_CHECKOUT_ENDPOINT =
   import.meta.env.VITE_STRIPE_CHECKOUT_ENDPOINT ||
   "https://f3nnaj8z43.execute-api.us-east-1.amazonaws.com/dev/booking";

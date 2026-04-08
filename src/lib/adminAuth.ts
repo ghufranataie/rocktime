@@ -4,7 +4,7 @@ export interface AdminSession {
   role: "admin";
 }
 
-const ADMIN_SESSION_KEY = "showtime_admin_session";
+const ADMIN_SESSION_KEY = "rocktime_admin_session";
 const ADMIN_AUTH_EVENT = "admin-auth-changed";
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
@@ -53,7 +53,7 @@ export const loginAdmin = async (email: string, password: string): Promise<Admin
 
   const session: AdminSession = {
     email: data?.email || email.trim().toLowerCase(),
-    name: data?.name || "ShowTime Admin",
+    name: data?.name || "RockTime Admin",
     role: "admin",
   };
 

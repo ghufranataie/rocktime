@@ -16,8 +16,8 @@ interface LoggedInUser {
   fullName?: string;
 }
 
-const STORAGE_KEY = "showtime_user";
-const USERS_STORAGE_KEY = "showtime_users";
+const STORAGE_KEY = "rocktime_user";
+const USERS_STORAGE_KEY = "rocktime_users";
 const AUTH_CHANGED_EVENT = "auth-changed";
 
 const getSavedUser = (): LoggedInUser | null => {

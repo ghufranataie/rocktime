@@ -18,7 +18,7 @@ By using our website and services, you consent to the practices described in thi
 We have appointed a Privacy Officer responsible for our compliance with this policy and applicable privacy laws.
 
 Privacy Officer
-Email: privacy@showtime228.com
+Email: privacy@rocktime228.com
 Address: Showtime228, Toronto, Ontario, Canada
 
 3. Personal Information We Collect
@@ -67,7 +67,7 @@ We may use or disclose information without consent when:
 We obtain your express or implied consent before collecting or using personal information. You may withdraw consent at any time by:
 - Unsubscribing from marketing emails via the link in each message
 - Updating preferences in your account dashboard
-- Contacting us at privacy@showtime228.com
+- Contacting us at privacy@rocktime228.com
 
 Withdrawing consent for core service purposes (e.g., payment processing) may prevent us from providing certain services.
 
@@ -117,7 +117,7 @@ Office of the Privacy Commissioner of Canada
 Toll-free: 1-800-282-1376
 Website: www.priv.gc.ca
 
-To exercise your rights, email privacy@showtime228.com with subject: "Privacy Rights Request."
+To exercise your rights, email privacy@rocktime228.com with subject: "Privacy Rights Request."
 
 10. Cookies
 
@@ -131,7 +131,7 @@ You can manage cookies in your browser settings. Disabling essential cookies may
 
 11. Children's Privacy
 
-Our services are not directed to individuals under 18 years of age. We do not knowingly collect personal information from minors. If you believe a child has submitted personal information, contact privacy@showtime228.com and we will delete it promptly.
+Our services are not directed to individuals under 18 years of age. We do not knowingly collect personal information from minors. If you believe a child has submitted personal information, contact privacy@rocktime228.com and we will delete it promptly.
 
 12. International Data Transfers
 
@@ -149,7 +149,7 @@ Continued use of our services after changes take effect constitutes acceptance o
 14. Contact Us
 
 Privacy Officer — Showtime228
-Email: privacy@showtime228.com
+Email: privacy@rocktime228.com
 Address: Toronto, Ontario, Canada
 
 We respond to all inquiries within 30 days.

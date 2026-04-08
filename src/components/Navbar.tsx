@@ -19,7 +19,7 @@ export default function Navbar() {
   useEffect(() => {
     const readUser = () => {
       try {
-        const raw = localStorage.getItem("showtime_user");
+        const raw = localStorage.getItem("rocktime_user");
         const user = raw ? (JSON.parse(raw) as { email?: string }) : null;
         setCurrentUserEmail(user?.email || null);
       } catch {
@@ -38,7 +38,7 @@ export default function Navbar() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("showtime_user");
+    localStorage.removeItem("rocktime_user");
     setCurrentUserEmail(null);
     window.dispatchEvent(new Event("auth-changed"));
     setMobileOpen(false);

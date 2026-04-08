@@ -22,8 +22,8 @@ interface UserTicket {
   bookingStatus: string;
 }
 
-const STORAGE_KEY = "showtime_user";
-const USERS_STORAGE_KEY = "showtime_users";
+const STORAGE_KEY = "rocktime_user";
+const USERS_STORAGE_KEY = "rocktime_users";
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   "https://f3nnaj8z43.execute-api.us-east-1.amazonaws.com/dev";
@@ -173,7 +173,7 @@ export default function AccountPage() {
                   </div>
                   
                   {/* Right side: Tear-off Stub */}
-                  <div className="w-28 bg-primary/[0.03] p-4 flex flex-col justify-center items-center text-center relative border-l border-primary/10">
+                  <div className="w-28 shrink-0 bg-primary/[0.03] p-4 flex flex-col justify-center items-center text-center relative border-l border-primary/10">
                      <p className="text-[10px] text-primary/70 uppercase font-black tracking-[0.2em] mb-1">Seat</p>
                      <p className="text-4xl font-black text-primary drop-shadow-sm">{ticket.seatNo}</p>
                      

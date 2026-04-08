@@ -39,8 +39,8 @@ const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   "https://f3nnaj8z43.execute-api.us-east-1.amazonaws.com/dev";
 
-export const ADMIN_EVENTS_STORAGE_KEY = "showtime_admin_events";
-const TAKEN_SEATS_STORAGE_KEY = "showtime_taken_seats";
+export const ADMIN_EVENTS_STORAGE_KEY = "rocktime_admin_events";
+const TAKEN_SEATS_STORAGE_KEY = "rocktime_taken_seats";
 
 const defaultEventImage =
   "https://images.unsplash.com/photo-1503095396549-807759245b35?w=1200&h=700&fit=crop";

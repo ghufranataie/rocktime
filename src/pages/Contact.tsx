@@ -1,6 +1,64 @@
+import { useState } from "react";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function ContactPage() {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("https://f3nnaj8z43.execute-api.us-east-1.amazonaws.com/dev/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send message");
+      }
+
+      toast({
+        title: "Success",
+        description: "Your message has been sent. We'll get back to you shortly.",
+      });
+
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen pt-24 pb-16">
       <div className="container mx-auto px-4 max-w-3xl">
@@ -15,16 +73,22 @@ export default function ContactPage() {
         {/* Contact Form */}
         <div className="p-8 mb-12 rounded-xl bg-card border border-border space-y-6">
           <h2 className="text-lg font-semibold text-primary">Send us a message</h2>
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input
                 type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
                 placeholder="Your Name"
                 className="w-full p-3 rounded-lg border border-border focus:ring-2 focus:ring-primary focus:outline-none"
                 required
               />
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
                 placeholder="Your Email"
                 className="w-full p-3 rounded-lg border border-border focus:ring-2 focus:ring-primary focus:outline-none"
                 required
@@ -32,11 +96,17 @@ export default function ContactPage() {
             </div>
             <input
               type="text"
+              name="subject"
+              value={formData.subject}
+              onChange={handleChange}
               placeholder="Subject"
               className="w-full p-3 rounded-lg border border-border focus:ring-2 focus:ring-primary focus:outline-none"
               required
             />
             <textarea
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
               placeholder="Your Message"
               rows={5}
               className="w-full p-3 rounded-lg border border-border focus:ring-2 focus:ring-primary focus:outline-none"
@@ -44,9 +114,10 @@ export default function ContactPage() {
             ></textarea>
             <button
               type="submit"
-              className="bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition"
+              disabled={isSubmitting}
+              className="bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Send Message
+              {isSubmitting ? "Sending..." : "Send Message"}
             </button>
           </form>
         </div>

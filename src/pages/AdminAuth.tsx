@@ -67,7 +67,7 @@ export default function AdminAuthPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full h-12 px-4 rounded-xl bg-secondary border border-border text-foreground focus:ring-2 focus:ring-primary/50 focus:outline-none"
-              placeholder="admin@showtime.com"
+              placeholder="admin@rocktime.com"
               autoComplete="email"
             />
           </div>

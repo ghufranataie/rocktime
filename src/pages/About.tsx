@@ -36,7 +36,7 @@ export default function AboutPage() {
             We Make Live Events <span className="text-primary">Accessible</span>
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            ShowTime was born from a simple belief: everyone deserves easy access to the magic of live entertainment. From intimate comedy clubs to grand concert halls, we connect fans with unforgettable moments through seamless technology and a passion for experiences.
+            RockTime was born from a simple belief: everyone deserves easy access to the magic of live entertainment. From intimate comedy clubs to grand concert halls, we connect fans with unforgettable moments through seamless technology and a passion for experiences.
           </p>
         </div>
 

@@ -174,14 +174,14 @@ export default function EventDetailPage() {
                       onClick={() => toggleSeat(seat)}
                       className={`w-7 h-7 rounded-full text-[10px] font-medium transition-all ${
                         isTaken
-                          ? "bg-taken cursor-not-allowed"
+                          ? "bg-taken text-white/70 cursor-not-allowed"
                           : isSelected
                           ? "bg-primary text-primary-foreground shadow-glow scale-110"
                           : "bg-foreground/10 border border-border hover:border-primary/50 hover:bg-primary/20"
                       }`}
                       title={`Seat ${seat}`}
                     >
-                      {!isTaken && seat}
+                      {seat}
                     </button>
                   );
                 })}

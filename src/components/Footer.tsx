@@ -32,14 +32,14 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-sm mb-3">Legal</h4>
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Privacy Policy</a>
-              <a href="/terms-of-service" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Terms of Service</a>
-              <a href="/refund-policy" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Refund Policy</a>
+              <Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+              <Link to="/terms-of-service" className="hover:text-primary transition-colors">Terms of Service</Link>
+              <Link to="/refund-policy" className="hover:text-primary transition-colors">Refund Policy</Link>
             </div>
           </div>
         </div>
         <div className="border-t border-border mt-8 pt-8 text-center text-xs text-muted-foreground">
-          © 2026 ShowTime. All rights reserved.
+          © 2026 RockTime. All rights reserved.
         </div>
       </div>
     </footer>

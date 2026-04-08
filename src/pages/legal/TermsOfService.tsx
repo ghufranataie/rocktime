@@ -31,7 +31,7 @@ To purchase tickets, you must:
 3.2 Account Responsibility
 - You are responsible for maintaining the confidentiality of your account credentials
 - You are responsible for all activities that occur under your account
-- You must notify us immediately at support@showtime228.com if you suspect unauthorized access to your account
+- You must notify us immediately at support@rocktime228.com if you suspect unauthorized access to your account
 - We reserve the right to suspend or terminate accounts that violate these Terms
 
 3.3 Accurate Information
@@ -146,7 +146,7 @@ These Terms are governed by the laws of the Province of Ontario and the federal 
 
 14.1 Dispute Resolution
 We encourage you to contact us first to resolve any disputes informally:
-Email: support@showtime228.com
+Email: support@rocktime228.com
 
 14.2 Jurisdiction
 If informal resolution fails, any legal action or proceeding shall be brought exclusively in the courts of Toronto, Ontario, Canada. You consent to the personal jurisdiction of such courts.
@@ -184,8 +184,8 @@ If any provision of these Terms is found to be invalid or unenforceable under ap
 
 For questions about these Terms and Conditions:
 Showtime228 — Legal & Support
-Email: support@showtime228.com
-Legal Inquiries: legal@showtime228.com
+Email: support@rocktime228.com
+Legal Inquiries: legal@rocktime228.com
 Address: Toronto, Ontario, Canada`;
 
 export default function TermsOfService() {

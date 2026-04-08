@@ -37,7 +37,7 @@ If an event is cancelled by the organizer, venue, or promoter:
 If an event is postponed or rescheduled:
 - Your original tickets remain valid for the new date
 - If you cannot attend the rescheduled date, you may request a full refund within 30 days of the rescheduling announcement
-- Submit your request to refunds@showtime228.com with your order number
+- Submit your request to refunds@rocktime228.com with your order number
 
 3.3 Ticket Invalidity
 If your ticket fails to grant you admission to the event it was issued for (e.g., invalid barcode, duplicate issuance, or access denied at the venue through no fault of your own):
@@ -58,7 +58,7 @@ Scenario / Ticket Price / Service Fees
 
 5. How to Request a Refund
 
-1. Email refunds@showtime228.com with the subject: Refund Request – Order #[your order number]
+1. Email refunds@rocktime228.com with the subject: Refund Request – Order #[your order number]
 2. Include in your email:
    - Full name and email address used for the purchase
    - Order number (from your confirmation email or account dashboard)
@@ -86,7 +86,7 @@ Please contact us before initiating a chargeback with your bank or card issuer. 
 
 Under the Ontario Consumer Protection Act, 2002, if Showtime228 fails to issue a legally required refund within the prescribed timeframe, you have the right to request a statutory chargeback from your credit card issuer. A written request to your card issuer must be submitted within the timeframe specified by your card agreement.
 
-For dispute resolution, contact: support@showtime228.com
+For dispute resolution, contact: support@rocktime228.com
 
 8. Event Organizer Refund Policies
 
@@ -94,7 +94,7 @@ As a ticket aggregator, Showtime228 acts as an intermediary. In some cases, the 
 
 9. Exceptions and Special Circumstances
 
-We may, at our sole discretion, offer store credit or exceptions on a case-by-case basis for documented emergencies (e.g., hospitalization). These are not guaranteed and are not a right under this policy. Submit exceptional circumstances to support@showtime228.com.
+We may, at our sole discretion, offer store credit or exceptions on a case-by-case basis for documented emergencies (e.g., hospitalization). These are not guaranteed and are not a right under this policy. Submit exceptional circumstances to support@rocktime228.com.
 
 10. Modifications to This Policy
 
@@ -103,8 +103,8 @@ We reserve the right to update this Refund Policy at any time. Changes will be p
 11. Contact for Refunds
 
 Refund & Support Team — Showtime228
-Email: refunds@showtime228.com
-General Support: support@showtime228.com
+Email: refunds@rocktime228.com
+General Support: support@rocktime228.com
 Address: Toronto, Ontario, Canada
 
 Consumer Protection Ontario (External Escalation)
