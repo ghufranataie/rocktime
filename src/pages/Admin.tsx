@@ -298,22 +298,33 @@ export default function AdminPage() {
                 <input type="number" min={1} value={form.seatsPerRow} onChange={(e) => setForm({ ...form, seatsPerRow: Number(e.target.value) })} placeholder="Seats per row" className="h-11 px-3 rounded-lg bg-secondary border border-border w-full" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
-                <input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="Image URL or upload file ->" className="h-11 px-3 rounded-lg bg-secondary border border-border w-full" />
                 <input 
-                  type="file" 
-                  accept="image/jpeg, image/png, image/webp" 
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
-                        setForm({ ...form, image: reader.result as string });
-                      };
-                      reader.readAsDataURL(file);
-                    }
-                  }} 
-                  className="h-11 px-3 py-2 rounded-lg bg-secondary border border-border w-full text-sm cursor-pointer file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90" 
+                  value={form.image.startsWith('data:image') ? "Image selected and ready to upload" : form.image} 
+                  onChange={(e) => setForm(prev => ({ ...prev, image: e.target.value }))} 
+                  placeholder="Image URL or upload file ->" 
+                  disabled={form.image.startsWith('data:image')}
+                  className="h-11 px-3 rounded-lg bg-secondary border border-border w-full disabled:opacity-50" 
                 />
+                <div className="flex gap-2 w-full">
+                  <input 
+                    type="file" 
+                    accept="image/jpeg, image/png, image/webp" 
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setForm(prev => ({ ...prev, image: reader.result as string }));
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }} 
+                    className="h-11 px-3 py-2 rounded-lg bg-secondary border border-border w-full text-sm cursor-pointer file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90" 
+                  />
+                  {form.image.startsWith('data:image') && (
+                    <button type="button" onClick={() => setForm(prev => ({ ...prev, image: "" }))} className="px-3 rounded-lg border border-border bg-destructive/10 text-destructive text-xs hover:bg-destructive hover:text-white transition-colors">Clear</button>
+                  )}
+                </div>
               </div>
               <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Description" className="min-h-24 px-3 py-2 rounded-lg bg-secondary border border-border w-full" />
               <div className="p-3 rounded-lg bg-secondary text-sm text-muted-foreground border border-border">
