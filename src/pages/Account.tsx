@@ -136,51 +136,70 @@ export default function AccountPage() {
           {!loadingTickets && tickets.length > 0 && (
             <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2 pb-2 mt-4 custom-scrollbar">
               {tickets.map((ticket) => (
-                <div key={ticket.bookingID} className="relative flex rounded-xl overflow-hidden border border-border bg-card shadow-sm group hover:shadow-md transition-all duration-300">
-                  {/* Left side: Main ticket info */}
-                  <div className="flex-1 p-5 border-r-2 border-dashed border-border/60 relative bg-gradient-to-br from-card to-secondary/30">
-                    {/* Semi-circle cutouts (top & bottom) on the tear line */}
-                    <div className="absolute top-[-10px] right-[-10px] h-5 w-5 rounded-full bg-secondary border border-border/40 shadow-inner z-10" />
-                    <div className="absolute bottom-[-10px] right-[-10px] h-5 w-5 rounded-full bg-secondary border border-border/40 shadow-inner z-10" />
-                    
-                    <div className="flex gap-4 items-start mb-2">
-                      <h3 className="font-bold text-foreground text-lg leading-tight truncate flex-1" title={ticket.showTitle}>
-                        {ticket.showTitle}
-                      </h3>
-                      <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider h-fit border ${
-                        ticket.bookingStatus === 'Booked' 
-                          ? 'bg-primary/10 text-primary border-primary/20' 
-                          : 'bg-destructive/10 text-destructive border-destructive/20'
-                      }`}>
-                        {ticket.bookingStatus}
-                      </span>
+                <div 
+                  key={ticket.bookingID} 
+                  className="relative flex flex-col sm:flex-row rounded-2xl overflow-hidden bg-card/60 backdrop-blur-md border border-border/60 shadow-lg group hover:shadow-xl hover:-translate-y-1 transition-all duration-500 ease-out"
+                >
+                  {/* Left decorative color bar */}
+                  <div className={`w-full sm:w-2 ${ticket.bookingStatus === 'Booked' ? 'bg-primary' : 'bg-destructive'} shrink-0`} />
+
+                  {/* Main Ticket Area */}
+                  <div className="flex-1 p-6 relative">
+                    {/* Background Pattern / Icon */}
+                    <div className="absolute top-1/2 right-4 -translate-y-1/2 opacity-[0.03] pointer-events-none">
+                      <Ticket className="w-32 h-32" />
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-y-4 gap-x-2 mt-6 text-sm">
+
+                    <div className="flex justify-between items-start mb-6 w-full gap-4">
+                      <div className="flex-1 min-w-0">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-3 backdrop-blur-sm ${
+                          ticket.bookingStatus === 'Booked' 
+                            ? 'bg-primary/20 text-primary border border-primary/30' 
+                            : 'bg-destructive/20 text-destructive border border-destructive/30'
+                        }`}>
+                          {ticket.bookingStatus}
+                        </span>
+                        <h3 className="font-bold text-xl md:text-2xl text-foreground leading-tight tracking-tight truncate w-full" title={ticket.showTitle}>
+                          {ticket.showTitle}
+                        </h3>
+                      </div>
+                      
+                      <div className="text-center shrink-0 flex flex-col items-center justify-center">
+                        <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-widest mb-1">Seat</p>
+                        <div className="bg-background/80 backdrop-blur-sm border border-border/50 rounded-xl px-4 py-2 shadow-inner inline-flex items-center justify-center min-w-[4rem]">
+                          <span className="text-2xl md:text-3xl font-black text-primary tabular-nums tracking-tight">
+                            {ticket.seatNo}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 pt-4 border-t border-border/30">
                       <div>
-                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-1.5">Booking Ref</p>
-                        <p className="font-mono text-foreground/80 text-xs py-1 px-2 bg-background/50 rounded-md border border-border/50 w-fit">
+                        <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider mb-1">Booking Ref</p>
+                        <p className="font-mono text-sm font-medium text-foreground/90 tabular-nums">
                           #{ticket.bookingID.toString().padStart(6, '0')}
                         </p>
                       </div>
                       <div>
-                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider mb-1.5">Booked By</p>
-                        <p className="text-foreground/90 text-xs truncate font-medium max-w-[120px]" title={ticket.bookingBy}>
+                        <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider mb-1">Booked By</p>
+                        <p className="text-sm font-medium text-foreground/90 truncate" title={ticket.bookingBy}>
                           {ticket.bookingBy}
                         </p>
                       </div>
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider mb-1">Payment</p>
+                        <p className="text-sm font-medium text-foreground/90 capitalize truncate" title={ticket.payRef}>
+                          {ticket.payMethod} {ticket.payRef && <span className="text-xs text-muted-foreground/70">({ticket.payRef})</span>}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider mb-1">Price</p>
+                        <p className="text-sm font-bold text-foreground/90 tabular-nums">
+                          ${ticket.price}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  
-                  {/* Right side: Tear-off Stub */}
-                  <div className="w-28 shrink-0 bg-primary/[0.03] p-4 flex flex-col justify-center items-center text-center relative border-l border-primary/10">
-                     <p className="text-[10px] text-primary/70 uppercase font-black tracking-[0.2em] mb-1">Seat</p>
-                     <p className="text-4xl font-black text-primary drop-shadow-sm">{ticket.seatNo}</p>
-                     
-                     <div className="mt-4 pt-3 border-t border-primary/10 w-full">
-                       <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">{ticket.payMethod}</p>
-                       <p className="text-sm font-black text-foreground/80 mt-0.5">${ticket.price}</p>
-                     </div>
                   </div>
                 </div>
               ))}

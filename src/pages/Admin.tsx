@@ -297,7 +297,24 @@ export default function AdminPage() {
                 <input type="number" min={1} value={form.rows} onChange={(e) => setForm({ ...form, rows: Number(e.target.value) })} placeholder="Rows" className="h-11 px-3 rounded-lg bg-secondary border border-border w-full" />
                 <input type="number" min={1} value={form.seatsPerRow} onChange={(e) => setForm({ ...form, seatsPerRow: Number(e.target.value) })} placeholder="Seats per row" className="h-11 px-3 rounded-lg bg-secondary border border-border w-full" />
               </div>
-              <input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="Image URL (optional)" className="h-11 px-3 rounded-lg bg-secondary border border-border w-full" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+                <input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="Image URL or upload file ->" className="h-11 px-3 rounded-lg bg-secondary border border-border w-full" />
+                <input 
+                  type="file" 
+                  accept="image/jpeg, image/png, image/webp" 
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setForm({ ...form, image: reader.result as string });
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }} 
+                  className="h-11 px-3 py-2 rounded-lg bg-secondary border border-border w-full text-sm cursor-pointer file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90" 
+                />
+              </div>
               <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Description" className="min-h-24 px-3 py-2 rounded-lg bg-secondary border border-border w-full" />
               <div className="p-3 rounded-lg bg-secondary text-sm text-muted-foreground border border-border">
                 Seat plan: {form.rows} × {form.seatsPerRow} = <span className="text-foreground font-semibold">{totalSeats}</span>
