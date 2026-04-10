@@ -23,6 +23,11 @@ export default function EventsPage() {
     fetchEvents().then(setEvents);
   }, []);
 
+  useEffect(() => {
+    const genreFromQuery = searchParams.get("genre") || "All";
+    setGenre(genres.includes(genreFromQuery) ? genreFromQuery : "All");
+  }, [searchParams]);
+
   const filtered = useMemo(() => {
     let result = events.filter((e) => {
       if (genre !== "All" && e.genre !== genre) return false;

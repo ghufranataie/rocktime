@@ -52,9 +52,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group">
           <Ticket className="h-7 w-7 text-primary transition-transform group-hover:rotate-12" />
-          <span className="text-xl font-bold tracking-tight text-foreground">
-            Show<span className="text-primary">Time</span>
-          </span>
+          <span className="text-xl font-bold tracking-tight text-foreground">RockTime</span>
         </Link>
 
         {/* Desktop Links */}

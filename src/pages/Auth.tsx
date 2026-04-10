@@ -249,7 +249,7 @@ export default function AuthPage() {
       <div className="relative w-full max-w-md p-8 rounded-2xl bg-card border border-border shadow-elevated animate-fade-in">
         <div className="flex items-center justify-center gap-2 mb-8">
           <Ticket className="h-8 w-8 text-primary" />
-          <span className="text-2xl font-bold">Show<span className="text-primary">Time</span></span>
+          <span className="text-2xl font-bold">RockTime</span>
         </div>
 
         {/* Tabs */}

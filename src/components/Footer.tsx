@@ -9,7 +9,7 @@ export default function Footer() {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Ticket className="h-6 w-6 text-primary" />
-              <span className="text-lg font-bold">Show<span className="text-primary">Time</span></span>
+              <span className="text-lg font-bold">RockTime</span>
             </div>
             <p className="text-sm text-muted-foreground">Your gateway to unforgettable live experiences.</p>
           </div>
@@ -22,11 +22,13 @@ export default function Footer() {
             </div>
           </div>
           <div>
-            <h4 className="font-semibold text-sm mb-3">Categories</h4>
+            <h4 className="font-semibold text-sm mb-3">
+              <Link to="/events" className="hover:text-primary transition-colors">Categories</Link>
+            </h4>
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
-              <span>Concerts</span>
-              <span>Theater</span>
-              <span>Comedy</span>
+              <Link to="/events?genre=Concerts" className="hover:text-primary transition-colors">Concerts</Link>
+              <Link to="/events?genre=Theater" className="hover:text-primary transition-colors">Theater</Link>
+              <Link to="/events?genre=Comedy" className="hover:text-primary transition-colors">Comedy</Link>
             </div>
           </div>
           <div>
