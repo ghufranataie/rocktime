@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Eye, EyeOff, Ticket } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 
 const API_BASE_URL = "https://f3nnaj8z43.execute-api.us-east-1.amazonaws.com/dev";
@@ -70,6 +70,7 @@ export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [agreedToLegal, setAgreedToLegal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentUser, setCurrentUser] = useState<LoggedInUser | null>(null);
   const navigate = useNavigate();
@@ -222,6 +223,14 @@ export default function AuthPage() {
         });
         return;
       }
+
+      if (!agreedToLegal) {
+        toast({
+          title: "Agreement required",
+          description: "Please accept Privacy Policy and Terms of Service to register.",
+        });
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -326,9 +335,31 @@ export default function AuthPage() {
             </div>
           )}
 
+          {tab === "register" && (
+            <label className="flex items-start gap-3 rounded-xl border border-border bg-secondary/60 p-3 text-sm">
+              <input
+                type="checkbox"
+                checked={agreedToLegal}
+                onChange={(e) => setAgreedToLegal(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-border"
+              />
+              <span className="text-muted-foreground leading-relaxed">
+                I agree to the Legal terms, including the{" "}
+                <Link to="/privacy-policy" className="text-primary hover:underline" target="_blank" rel="noreferrer">
+                  Privacy Policy
+                </Link>{" "}
+                and{" "}
+                <Link to="/terms-of-service" className="text-primary hover:underline" target="_blank" rel="noreferrer">
+                  Terms of Service
+                </Link>
+                .
+              </span>
+            </label>
+          )}
+
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || (tab === "register" && !agreedToLegal)}
             className="w-full py-3 rounded-xl gradient-primary text-primary-foreground font-bold text-lg mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {isSubmitting ? "Please wait..." : buttonText}
